@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { getFormById, submitForm } from '../services/api';
 import { useForm } from 'react-hook-form';
@@ -8,6 +8,7 @@ import './UserForm.css';
 
 const UserForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
 
   const { data: form, isLoading, isError } = useQuery({
@@ -19,6 +20,7 @@ const UserForm: React.FC = () => {
     mutationFn: (answers: any) => submitForm(id!, answers),
     onSuccess: () => {
       alert('Form submitted successfully!');
+      navigate('/');
     },
     onError: () => {
       alert('Error submitting form!');
@@ -26,7 +28,15 @@ const UserForm: React.FC = () => {
   });
 
   const onSubmit = (data: any) => {
-    submitFormMutation.mutate(data);
+    const formData = new FormData();
+    for (const key in data) {
+      if (key === 'file') {
+        formData.append('file', data[key][0]);
+      } else {
+        formData.append(key, data[key]);
+      }
+    }
+    submitFormMutation.mutate(formData);
   };
 
   if (isLoading) {
@@ -43,7 +53,7 @@ const UserForm: React.FC = () => {
         <h1>{form.title}</h1>
         <p>{form.description}</p>
         <form onSubmit={handleSubmit(onSubmit)}>
-          {form.fields.map((field: any) => (
+          {form.fields.sort((a: any, b: any) => a.order - b.order).map((field: any) => (
             <FieldRenderer key={field.name} field={field} register={register} />
           ))}
           <button type="submit" className="btn btn-primary">Submit</button>

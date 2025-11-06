@@ -8,6 +8,12 @@ const { exportToCsv } = require('../utils/csvExporter');
 // @desc    Submit a form
 // @route   POST /api/forms/:id/submit
 // @access  Public
+const multer = require('multer');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+exports.uploadFile = upload.single('file');
+
 exports.submitForm = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -22,10 +28,12 @@ exports.submitForm = async (req, res) => {
 
     const answers = new Map();
     for (const field of form.fields) {
-      let answer = req.body[field.name];
-      if (answer) {
-        answer = sanitizeHtml(answer);
-        answers.set(field.name, answer);
+      if (field.type !== 'file') {
+        let answer = req.body[field.name];
+        if (answer) {
+          answer = sanitizeHtml(answer);
+          answers.set(field.name, answer);
+        }
       }
     }
 
@@ -34,6 +42,14 @@ exports.submitForm = async (req, res) => {
       formVersion: form.version,
       answers,
     });
+
+    if (req.file) {
+      submission.file = {
+        data: req.file.buffer,
+        contentType: req.file.mimetype,
+        fileName: req.file.originalname,
+      };
+    }
 
     await submission.save();
     res.status(201).json({ message: 'Form submitted successfully' });
@@ -47,13 +63,21 @@ exports.submitForm = async (req, res) => {
 // @access  Admin
 exports.getSubmissions = async (req, res) => {
   try {
-    const { page = 1, limit = 10 } = req.query;
-    const submissions = await Submission.find({ form: req.params.id })
+    const { page = 1, limit = 10, ...filters } = req.query;
+    const query = { form: req.params.id };
+
+    for (const key in filters) {
+      if (filters.hasOwnProperty(key)) {
+        query[`answers.${key}`] = { $regex: filters[key], $options: 'i' };
+      }
+    }
+
+    const submissions = await Submission.find(query)
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .exec();
 
-    const count = await Submission.countDocuments({ form: req.params.id });
+    const count = await Submission.countDocuments(query);
 
     res.json({
       submissions,
@@ -77,12 +101,47 @@ exports.exportSubmissions = async (req, res) => {
 
     const submissions = await Submission.find({ form: req.params.id });
 
-    const fields = ['_id', 'submittedAt', ...form.fields.map(f => `answers.${f.name}`)];
-    const csv = exportToCsv(submissions, fields);
+    const flattenedSubmissions = submissions.map(submission => {
+      const flatSubmission = {
+        _id: submission._id,
+        submittedAt: submission.submittedAt,
+      };
+      for (const [key, value] of submission.answers) {
+        flatSubmission[key] = value;
+      }
+      if (submission.file) {
+        flatSubmission.file = submission.file.fileName;
+      }
+      return flatSubmission;
+    });
+
+    const fields = ['_id', 'submittedAt', ...form.fields.filter(f => f.type !== 'file').map(f => f.name)];
+    if (form.fields.some(f => f.type === 'file')) {
+      fields.push('file');
+    }
+
+    const csv = exportToCsv(flattenedSubmissions, fields);
 
     res.header('Content-Type', 'text/csv');
     res.attachment('submissions.csv');
     res.send(csv);
+  } catch (error) {
+    console.error('Error exporting CSV:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.getSubmissionFile = async (req, res) => {
+  try {
+    const submission = await Submission.findById(req.params.id);
+
+    if (!submission || !submission.file) {
+      return res.status(404).json({ message: 'File not found' });
+    }
+
+    res.set('Content-Type', submission.file.contentType);
+    res.set('Content-Disposition', `attachment; filename="${submission.file.fileName}"`);
+    res.send(submission.file.data);
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }

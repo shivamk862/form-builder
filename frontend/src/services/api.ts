@@ -44,9 +44,10 @@ export const deleteForm = async (id: string) => {
   return response.data;
 };
 
-export const getSubmissions = async (formId: string) => {
-  console.log('Fetching submissions for formId:', formId);
-  const response = await adminApi.get(`/forms/${formId}/submissions`);
+export const getSubmissions = async (formId: string, page: number, filters: { [key: string]: string }) => {
+  console.log('Fetching submissions for formId:', formId, 'page:', page, 'filters:', filters);
+  const params = { page, ...filters };
+  const response = await adminApi.get(`/forms/${formId}/submissions`, { params });
   return response.data;
 };
 
@@ -57,7 +58,18 @@ export const exportSubmissions = async (formId: string) => {
   return response.data;
 };
 
-export const submitForm = async (formId: string, answers: any) => {
-  const response = await api.post(`/forms/${formId}/submit`, { answers });
+export const submitForm = async (formId: string, formData: FormData) => {
+  const response = await api.post(`/forms/${formId}/submit`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
+export const getSubmissionFile = async (submissionId: string) => {
+  const response = await adminApi.get(`/submissions/${submissionId}/file`, {
+    responseType: 'blob',
+  });
   return response.data;
 };

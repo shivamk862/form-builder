@@ -18,5 +18,6 @@ router.delete('/forms/:id/fields/:fieldId', formController.deleteField);
 
 router.get('/forms/:id/submissions', submissionController.getSubmissions);
 router.get('/forms/:id/submissions/export', submissionController.exportSubmissions);
+router.get('/submissions/:id/file', submissionController.getSubmissionFile);
 
 module.exports = router;

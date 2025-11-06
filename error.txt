@@ -1,56 +1,15 @@
-Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
-AdminDashboard.tsx:19 Deleting form with id: 690c71df78dc7f0b75b804a1
-:5000/api/admin/forms/690c71df78dc7f0b75b804a1:1  Failed to load resource: the server responded with a status of 500 (Internal Server Error)Understand this error
-AdminDashboard.tsx:19 Deleting form with id: 690c71df78dc7f0b75b804a1
-api.ts:43  DELETE http://localhost:5000/api/admin/forms/690c71df78dc7f0b75b804a1 500 (Internal Server Error)
-
-
-Download the React DevTools for a better development experience: https://react.dev/link/react-devtools
-api.ts:48 Fetching submissions for formId: 690c71df78dc7f0b75b804a1
-Submissions.tsx:49 Uncaught TypeError: submissions.map is not a function
-    at Submissions (Submissions.tsx:49:26)
-    at Object.react_stack_bottom_frame (react-dom_client.js?v=d30039d9:18509:20)
-    at renderWithHooks (react-dom_client.js?v=d30039d9:5654:24)
-    at updateFunctionComponent (react-dom_client.js?v=d30039d9:7475:21)
-    at beginWork (react-dom_client.js?v=d30039d9:8525:20)
-    at runWithFiberInDEV (react-dom_client.js?v=d30039d9:997:72)
-    at performUnitOfWork (react-dom_client.js?v=d30039d9:12561:98)
-    at workLoopSync (react-dom_client.js?v=d30039d9:12424:43)
-    at renderRootSync (react-dom_client.js?v=d30039d9:12408:13)
-    at performWorkOnRoot (react-dom_client.js?v=d30039d9:11827:37)
-Submissions @ Submissions.tsx:49
-react_stack_bottom_frame @ react-dom_client.js?v=d30039d9:18509
-renderWithHooks @ react-dom_client.js?v=d30039d9:5654
-updateFunctionComponent @ react-dom_client.js?v=d30039d9:7475
-beginWork @ react-dom_client.js?v=d30039d9:8525
-runWithFiberInDEV @ react-dom_client.js?v=d30039d9:997
-performUnitOfWork @ react-dom_client.js?v=d30039d9:12561
-workLoopSync @ react-dom_client.js?v=d30039d9:12424
-renderRootSync @ react-dom_client.js?v=d30039d9:12408
-performWorkOnRoot @ react-dom_client.js?v=d30039d9:11827
-performSyncWorkOnRoot @ react-dom_client.js?v=d30039d9:13517
-flushSyncWorkAcrossRoots_impl @ react-dom_client.js?v=d30039d9:13414
-processRootScheduleInMicrotask @ react-dom_client.js?v=d30039d9:13437
-(anonymous) @ react-dom_client.js?v=d30039d9:13531
-<Submissions>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=d30039d9:247
-App @ App.tsx:28
-react_stack_bottom_frame @ react-dom_client.js?v=d30039d9:18509
-renderWithHooksAgain @ react-dom_client.js?v=d30039d9:5729
-renderWithHooks @ react-dom_client.js?v=d30039d9:5665
-updateFunctionComponent @ react-dom_client.js?v=d30039d9:7475
-beginWork @ react-dom_client.js?v=d30039d9:8525
-runWithFiberInDEV @ react-dom_client.js?v=d30039d9:997
-performUnitOfWork @ react-dom_client.js?v=d30039d9:12561
-workLoopSync @ react-dom_client.js?v=d30039d9:12424
-renderRootSync @ react-dom_client.js?v=d30039d9:12408
-performWorkOnRoot @ react-dom_client.js?v=d30039d9:11766
-performWorkOnRootViaSchedulerTask @ react-dom_client.js?v=d30039d9:13505
-performWorkUntilDeadline @ react-dom_client.js?v=d30039d9:36
-<App>
-exports.jsxDEV @ react_jsx-dev-runtime.js?v=d30039d9:247
-(anonymous) @ main.tsx:13Understand this error
-App.tsx:28 An error occurred in the <Submissions> component.
-
-Consider adding an error boundary to your tree to customize error handling behavior.
-Visit https://react.dev/link/error-boundaries to learn more about error boundaries.
+version 4.0.0 and will be removed in the next major version
+Server is running on port 5000
+MongoDB connected
+TypeError: parse is not a function
+    at exports.exportToCsv (C:\Users\Shivam\Desktop\assignment\backend\src\utils\csvExporter.js:6:17)
+    at exports.exportSubmissions (C:\Users\Shivam\Desktop\assignment\backend\src\controllers\submissionController.js:123:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+TypeError: parse is not a function
+    at exports.exportToCsv (C:\Users\Shivam\Desktop\assignment\backend\src\utils\csvExporter.js:6:17)
+    at exports.exportSubmissions (C:\Users\Shivam\Desktop\assignment\backend\src\controllers\submissionController.js:123:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+TypeError: parse is not a function
+    at exports.exportToCsv (C:\Users\Shivam\Desktop\assignment\backend\src\utils\csvExporter.js:6:17)
+    at exports.exportSubmissions (C:\Users\Shivam\Desktop\assignment\backend\src\controllers\submissionController.js:123:17)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)

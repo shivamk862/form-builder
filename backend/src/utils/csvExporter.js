@@ -1,9 +1,10 @@
-const { parse } = require('@json2csv/node');
+const { Parser } = require('@json2csv/node');
 
 exports.exportToCsv = (data, fields) => {
   const opts = { fields };
   try {
-    const csv = parse(data, opts);
+    const parser = new Parser(opts);
+    const csv = parser.parse(data);
     return csv;
   } catch (err) {
     console.error(err);
