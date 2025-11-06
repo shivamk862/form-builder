@@ -1,0 +1,45 @@
+**What's Done:**
+
+*   **Backend Project Setup:**
+    *   Created `backend` directory and subdirectories (`src`, `src/config`, `src/models`, `src/controllers`, `src/routes`, `src/middlewares`, `src/utils`, `tests`).
+    *   Initialized Node.js project (`package.json`).
+    *   Installed core dependencies (`express`, `mongoose`, `body-parser`, `cors`, `dotenv`, `express-validator`, `sanitize-html`, `multer`, `@json2csv/node`).
+    *   Installed dev dependencies (`jest`, `supertest`, `nodemon`).
+    *   Created `app.js` (main Express app).
+    *   Created `db.js` (MongoDB connection).
+    *   Created `Form.js` and `Submission.js` (Mongoose models).
+    *   Created `publicRoutes.js` and `adminRoutes.js`.
+    *   Created `authMiddleware.js` (basic admin authentication using `ADMIN_USERNAME` and `ADMIN_PASSWORD` from `.env`).
+    *   Created `formController.js` (CRUD for forms and fields).
+    *   Created `submissionController.js` (submit form, get submissions, export submissions).
+    *   Created `csvExporter.js` (utility for CSV export).
+    *   Updated `app.js` to use routes.
+    *   Updated `package.json` with `start`, `dev`, and `test` scripts.
+    *   Created `tests/form.test.js` and `tests/submission.test.js` (initial test files).
+    *   Configured Jest (`jest.config.js`, `tests/setup.js`, `tests/teardown.js`) for testing with a separate test database.
+    *   Updated `.env` with `ADMIN_TOKEN`, `MONGO_URI`, `PORT`, `ADMIN_USERNAME`, `ADMIN_PASSWORD`, and `MONGO_URI_TEST`.
+    *   Created `backend/src/context/SessionContext.js` as a placeholder.
+
+**What to Do Next (for this CLI session):**
+
+1.  **Frontend Project Setup:**
+    *   Create a new React project using Vite and TypeScript in the `frontend` directory.
+    *   Install recommended frontend libraries (`react-router-dom`, `react-hook-form`, `react-query`, `react-beautiful-dnd`, `axios`, `tailwindcss`).
+    *   Configure TailwindCSS.
+    *   Set up the basic frontend folder structure (`src/pages`, `src/components`, `src/services`, `src/hooks`).
+    *   Create `App.tsx` and basic page components (`AdminDashboard.tsx`, `FormBuilder.tsx`, `Submissions.tsx`, `UserForm.tsx`).
+
+2.  **Frontend Implementation:**
+    *   Implement the Admin Panel features (list forms, create/edit/delete forms, add/edit/delete fields, drag and drop reorder, preview form, view/filter submissions, export CSV).
+    *   Implement the User Form Renderer features (fetch forms, render fields dynamically, client-side validation, submit data).
+    *   Connect frontend to backend APIs.
+
+3.  **Docker Setup:**
+    *   Create `Dockerfile` for the backend.
+    *   Create `Dockerfile` for the frontend.
+    *   Create `docker-compose.yml` to orchestrate backend, frontend, and MongoDB.
+
+4.  **Final Touches:**
+    *   Add unit and integration tests for the frontend (if applicable and time permits).
+    *   Create `README.md` files for backend, frontend, and root.
+    *   Ensure all bonus features are implemented.

@@ -1,0 +1,27 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.form-list .card {
+  margin-bottom: 20px;
+}
+
+.form-list .card h2 {
+  margin-top: 0;
+}
+
+.form-list .card .version {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+.form-list .card .actions {
+  margin-top: 20px;
+}
+
+.form-list .card .actions .btn {
+  margin-right: 10px;
+}

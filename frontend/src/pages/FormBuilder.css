@@ -1,0 +1,8 @@
+.form-builder .form-group {
+  margin-bottom: 20px;
+}
+
+.form-builder label {
+  display: block;
+  margin-bottom: 5px;
+}
