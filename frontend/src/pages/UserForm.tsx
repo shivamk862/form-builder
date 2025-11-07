@@ -9,7 +9,9 @@ import './UserForm.css';
 const UserForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, watch } = useForm();
+  const [formErrors, setFormErrors] = useState<any[]>([]);
+
   const { data: form, isLoading, isError } = useQuery({
     queryKey: ['form', id],
     queryFn: () => getFormById(id!),
@@ -19,10 +21,15 @@ const UserForm: React.FC = () => {
     mutationFn: (answers: any) => submitForm(id!, answers),
     onSuccess: () => {
       alert('Form submitted successfully!');
+      setFormErrors([]); // Clear errors on success
       navigate('/');
     },
-    onError: () => {
-      alert('Error submitting form!');
+    onError: (error: any) => {
+      if (error.response && error.response.data && error.response.data.errors) {
+        setFormErrors(error.response.data.errors);
+      } else {
+        setFormErrors([{ message: 'Error submitting form!' }]);
+      }
     }
   });
 
@@ -58,9 +65,16 @@ const UserForm: React.FC = () => {
       <div className="user-form card">
         <h1>{form.title}</h1>
         <p>{form.description}</p>
+        {formErrors.length > 0 && (
+          <div className="error-messages">
+            {formErrors.map((err, index) => (
+              <p key={index} className="error-message">{err.message}</p>
+            ))}
+          </div>
+        )}
         <form onSubmit={handleSubmit(onSubmit)}>
           {form.fields.sort((a: any, b: any) => a.order - b.order).map((field: any) => (
-            <FieldRenderer key={field.name} field={field} register={register} />
+            <FieldRenderer key={field.name} field={field} register={register} watch={watch} />
           ))}
           <button type="submit" className="btn btn-primary">Submit</button>
         </form>

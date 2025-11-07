@@ -50,15 +50,84 @@ exports.submitForm = async (req, res) => {
       return res.status(404).json({ message: 'Form not found' });
     }
 
+    const validationErrors = [];
     const answers = new Map();
+
     for (const field of form.fields) {
-      if (field.type !== 'file') {
-        let answer = req.body[field.name];
-        if (answer) {
-          answer = sanitizeHtml(answer);
-          answers.set(field.name, answer);
+      const answer = req.body[field.name];
+
+      // Handle file type separately
+      if (field.type === 'file') {
+        if (field.required && !req.file) {
+          validationErrors.push({ field: field.name, message: `${field.label} is required.` });
         }
+        continue; // Skip further validation for file type
       }
+
+      // Required validation
+      if (field.required && (!answer || (typeof answer === 'string' && answer.trim() === ''))) {
+        validationErrors.push({ field: field.name, message: `${field.label} is required.` });
+        continue; // Skip further validation if required field is empty
+      }
+
+      // Conditional field check (only validate if field is visible based on condition)
+      // This assumes frontend handles visibility, but backend should also respect it for validation
+      if (field.conditional && req.body[field.conditional.field] !== field.conditional.value) {
+        // If the dependent field's value doesn't match the condition, and this field is not required, skip validation
+        // If it's required, it should have been caught by the 'required' check above if it was submitted.
+        // For now, we'll assume if it's hidden, it's not submitted or not required.
+        // A more robust solution would involve knowing which fields were actually visible on the frontend.
+        continue;
+      }
+
+      // Type-specific validations
+      switch (field.type) {
+        case 'number':
+          const numAnswer = Number(answer);
+          if (isNaN(numAnswer)) {
+            validationErrors.push({ field: field.name, message: `${field.label} must be a number.` });
+          } else {
+            if (field.validation?.min !== undefined && numAnswer < field.validation.min) {
+              validationErrors.push({ field: field.name, message: `${field.label} must be at least ${field.validation.min}.` });
+            }
+            if (field.validation?.max !== undefined && numAnswer > field.validation.max) {
+              validationErrors.push({ field: field.name, message: `${field.label} must be at most ${field.validation.max}.` });
+            }
+          }
+          break;
+        case 'email':
+          // Basic email regex validation
+          const emailRegex = /^[\w-]+(?:\.[\w-]+)*@(?:[\w-]+\.)+[a-zA-Z]{2,7}$/;
+          if (answer && !emailRegex.test(answer)) {
+            validationErrors.push({ field: field.name, message: `${field.label} must be a valid email address.` });
+          }
+          break;
+        case 'text':
+          if (field.validation?.regex && answer) {
+            try {
+              const regex = new RegExp(field.validation.regex);
+              if (!regex.test(answer)) {
+                validationErrors.push({ field: field.name, message: `${field.label} does not match the required pattern.` });
+              }
+            } catch (e) {
+              console.error(`Invalid regex for field ${field.name}: ${field.validation.regex}`, e);
+              // Optionally, push an error about invalid regex definition itself
+            }
+          }
+          break;
+        // Add other type-specific validations as needed
+      }
+
+      // Sanitize and store answer
+      if (answer) {
+        answers.set(field.name, sanitizeHtml(answer));
+      } else {
+        answers.set(field.name, ''); // Store empty string for non-file, non-required empty fields
+      }
+    }
+
+    if (validationErrors.length > 0) {
+      return res.status(400).json({ errors: validationErrors });
     }
 
     const submission = new Submission({

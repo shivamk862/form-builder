@@ -14,6 +14,10 @@ interface Field {
     regex?: string;
   };
   order: number;
+  conditional?: {
+    field: string;
+    value: string;
+  };
 }
 
 interface FieldEditorProps {
@@ -154,6 +158,25 @@ const FieldEditor: React.FC<FieldEditorProps> = ({ fields, setFields }) => {
                             />
                           </div>
                         )}
+                         <div className="form-group conditional-logic-section">
+                           <label>Conditional Logic (Show if...)</label>
+                           <div className="conditional-inputs">
+                             <input
+                               type="text"
+                               placeholder="Depends on Field Name"
+                               value={field.conditional?.field || ''}
+                               onChange={(e) => handleFieldChange(index, { conditional: { ...field.conditional, field: e.target.value } })}
+                               className="form-control"
+                             />
+                             <input
+                               type="text"
+                               placeholder="Equals Value"
+                               value={field.conditional?.value || ''}
+                               onChange={(e) => handleFieldChange(index, { conditional: { ...field.conditional, value: e.target.value } })}
+                               className="form-control"
+                             />
+                           </div>
+                         </div>
                       </div>
                       <button onClick={() => removeField(index)} className="btn btn-danger">Remove</button>
                     </div>

@@ -6,14 +6,26 @@ interface Field {
   type: string;
   name: string;
   options: string[];
+  conditional?: {
+    field: string;
+    value: string;
+  };
 }
 
 interface FieldRendererProps {
   field: Field;
   register: any;
+  watch: any; // Add watch function from react-hook-form
 }
 
-const FieldRenderer: React.FC<FieldRendererProps> = ({ field, register }) => {
+const FieldRenderer: React.FC<FieldRendererProps> = ({ field, register, watch }) => {
+  if (field.conditional) {
+    const dependentFieldValue = watch(field.conditional.field);
+    if (dependentFieldValue !== field.conditional.value) {
+      return null; // Hide the field if the condition is not met
+    }
+  }
+
   switch (field.type) {
     case 'text':
     case 'number':
