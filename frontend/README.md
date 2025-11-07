@@ -1,22 +1,40 @@
-# Frontend
+# Frontend - Dynamic Form Builder
 
-This is the frontend of the Dynamic Form Builder application, built with React, Vite, and Tailwind CSS.
+This is the frontend for the Dynamic Form Builder application, built with React, Vite, and TypeScript.
 
-## Development
+## Features
 
-To run the frontend in development mode:
+### Admin Panel
 
-1.  Navigate to the `frontend` directory.
-2.  Install the dependencies:
+- Create, edit, and delete forms.
+- Add, edit, delete, and reorder fields within a form.
+- Define validation rules (required, min, max, regex) for fields.
+- Define conditional logic for fields (show/hide based on other field values).
+- View and filter form submissions.
+- Export submissions as CSV.
+- Download uploaded files from submissions.
 
-    ```bash
-    npm install
-    ```
+### User Form View
 
-3.  Run the development server:
+- Dynamically renders forms based on the definition from the backend.
+- Supports conditional fields.
+- Client-side validation hints (server-side validation is the source of truth).
+- File uploads.
 
-    ```bash
-    npm run dev
-    ```
+## Local Development (Without Docker)
 
-The frontend will be available at `http://localhost:5173`.
+1. **Navigate to the frontend directory:**
+   ```sh
+   cd frontend
+   ```
+
+2. **Install dependencies:**
+   ```sh
+   npm install
+   ```
+
+3. **Run the development server:**
+   ```sh
+   npm run dev
+   ```
+   The frontend application will be available at `http://localhost:5173`.
