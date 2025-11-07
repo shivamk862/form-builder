@@ -5,9 +5,6 @@ const { validationResult } = require('express-validator');
 const sanitizeHtml = require('sanitize-html');
 const { exportToCsv } = require('../utils/csvExporter');
 
-// @desc    Submit a form
-// @route   POST /api/forms/:id/submit
-// @access  Public
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -56,31 +53,24 @@ exports.submitForm = async (req, res) => {
     for (const field of form.fields) {
       const answer = req.body[field.name];
 
-      // Handle file type separately
       if (field.type === 'file') {
         if (field.required && !req.file) {
           validationErrors.push({ field: field.name, message: `${field.label} is required.` });
         }
-        continue; // Skip further validation for file type
-      }
-
-      // Required validation
-      if (field.required && (!answer || (typeof answer === 'string' && answer.trim() === ''))) {
-        validationErrors.push({ field: field.name, message: `${field.label} is required.` });
-        continue; // Skip further validation if required field is empty
-      }
-
-      // Conditional field check (only validate if field is visible based on condition)
-      // This assumes frontend handles visibility, but backend should also respect it for validation
-      if (field.conditional && req.body[field.conditional.field] !== field.conditional.value) {
-        // If the dependent field's value doesn't match the condition, and this field is not required, skip validation
-        // If it's required, it should have been caught by the 'required' check above if it was submitted.
-        // For now, we'll assume if it's hidden, it's not submitted or not required.
-        // A more robust solution would involve knowing which fields were actually visible on the frontend.
         continue;
       }
 
-      // Type-specific validations
+      
+      if (field.required && (!answer || (typeof answer === 'string' && answer.trim() === ''))) {
+        validationErrors.push({ field: field.name, message: `${field.label} is required.` });
+        continue;
+      }
+
+      if (field.conditional && req.body[field.conditional.field] !== field.conditional.value) {
+        continue;
+      }
+
+      
       switch (field.type) {
         case 'number':
           const numAnswer = Number(answer);
@@ -96,7 +86,6 @@ exports.submitForm = async (req, res) => {
           }
           break;
         case 'email':
-          // Basic email regex validation
           const emailRegex = /^[\w-]+(?:\.[\w-]+)*@(?:[\w-]+\.)+[a-zA-Z]{2,7}$/;
           if (answer && !emailRegex.test(answer)) {
             validationErrors.push({ field: field.name, message: `${field.label} must be a valid email address.` });
@@ -111,18 +100,15 @@ exports.submitForm = async (req, res) => {
               }
             } catch (e) {
               console.error(`Invalid regex for field ${field.name}: ${field.validation.regex}`, e);
-              // Optionally, push an error about invalid regex definition itself
             }
           }
           break;
-        // Add other type-specific validations as needed
       }
 
-      // Sanitize and store answer
       if (answer) {
         answers.set(field.name, sanitizeHtml(answer));
       } else {
-        answers.set(field.name, ''); // Store empty string for non-file, non-required empty fields
+        answers.set(field.name, '');
       }
     }
 
@@ -151,9 +137,7 @@ exports.submitForm = async (req, res) => {
   }
 };
 
-// @desc    Get all submissions for a form
-// @route   GET /api/admin/forms/:id/submissions
-// @access  Admin
+
 exports.getSubmissions = async (req, res) => {
   try {
     const { page = 1, limit = 10, ...filters } = req.query;
@@ -183,9 +167,7 @@ exports.getSubmissions = async (req, res) => {
   }
 };
 
-// @desc    Export submissions as CSV
-// @route   GET /api/admin/forms/:id/submissions/export
-// @access  Admin
+
 exports.exportSubmissions = async (req, res) => {
   try {
     const form = await Form.findById(req.params.id);
@@ -199,7 +181,7 @@ exports.exportSubmissions = async (req, res) => {
       const flatSubmission = {
         _id: submission._id,
         submittedAt: submission.submittedAt,
-        ...Object.fromEntries(submission.answers), // Convert Map to plain object
+        ...Object.fromEntries(submission.answers),
       };
       if (submission.file) {
         flatSubmission.file = submission.file.fileName;

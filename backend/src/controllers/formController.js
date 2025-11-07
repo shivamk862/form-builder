@@ -1,9 +1,7 @@
 
 const Form = require('../models/Form');
 
-// @desc    Get all forms
-// @route   GET /api/forms
-// @access  Public
+
 exports.getForms = async (req, res) => {
   try {
     const forms = await Form.find().select('-fields');
@@ -13,9 +11,6 @@ exports.getForms = async (req, res) => {
   }
 };
 
-// @desc    Get form by ID
-// @route   GET /api/forms/:id
-// @access  Public
 exports.getFormById = async (req, res) => {
   try {
     const form = await Form.findById(req.params.id);
@@ -28,9 +23,7 @@ exports.getFormById = async (req, res) => {
   }
 };
 
-// @desc    Create a new form
-// @route   POST /api/admin/forms
-// @access  Admin
+
 exports.createForm = async (req, res) => {
   try {
     const { title, description, fields } = req.body;
@@ -42,9 +35,6 @@ exports.createForm = async (req, res) => {
   }
 };
 
-// @desc    Update a form
-// @route   PUT /api/admin/forms/:id
-// @access  Admin
 exports.updateForm = async (req, res) => {
   try {
     const { title, description, fields } = req.body;
@@ -66,9 +56,6 @@ exports.updateForm = async (req, res) => {
   }
 };
 
-// @desc    Delete a form
-// @route   DELETE /api/admin/forms/:id
-// @access  Admin
 exports.deleteForm = async (req, res) => {
   try {
     const form = await Form.findById(req.params.id);
@@ -84,9 +71,6 @@ exports.deleteForm = async (req, res) => {
   }
 };
 
-// @desc    Add a field to a form
-// @route   POST /api/admin/forms/:id/fields
-// @access  Admin
 exports.addField = async (req, res) => {
   try {
     const form = await Form.findById(req.params.id);
@@ -104,9 +88,6 @@ exports.addField = async (req, res) => {
   }
 };
 
-// @desc    Update a field in a form
-// @route   PUT /api/admin/forms/:id/fields/:fieldId
-// @access  Admin
 exports.updateField = async (req, res) => {
   try {
     const form = await Form.findById(req.params.id);
@@ -130,9 +111,6 @@ exports.updateField = async (req, res) => {
   }
 };
 
-// @desc    Delete a field from a form
-// @route   DELETE /api/admin/forms/:id/fields/:fieldId
-// @access  Admin
 exports.deleteField = async (req, res) => {
   try {
     const form = await Form.findById(req.params.id);
