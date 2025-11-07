@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import './Navbar.css';
 
 const Navbar: React.FC = () => {
   const navigate = useNavigate();
-  const isAdmin = !!localStorage.getItem('admin_username');
+  const { isAuthenticated, logout } = useAuth();
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_username');
-    localStorage.removeItem('admin_password');
+    logout();
     navigate('/');
   };
 
@@ -17,7 +17,7 @@ const Navbar: React.FC = () => {
       <div className="container">
         <Link to="/" className="navbar-brand">Form Builder</Link>
         <div className="navbar-links">
-          {isAdmin ? (
+          {isAuthenticated ? (
             <>
               <Link to="/admin" className="nav-link">Admin</Link>
               <button onClick={handleLogout} className="nav-link btn-logout">Logout</button>

@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [username, setUsername] = useState(localStorage.getItem('admin_username') || '');
-  const [password, setPassword] = useState(localStorage.getItem('admin_password') || '');
-  const [isAuthenticated, setIsAuthenticated] = useState(!!(username && password));
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const { isAuthenticated, login } = useAuth();
 
-  const handleLogin = () => {
-    localStorage.setItem('admin_username', username);
-    localStorage.setItem('admin_password', password);
-    setIsAuthenticated(true);
+  const handleLogin = async () => {
+    setError(null);
+    const success = await login(username, password);
+    if (!success) {
+      setError('Invalid username or password');
+    }
   };
 
   if (!isAuthenticated) {
@@ -16,6 +20,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <div className="container">
         <div className="login-form card">
           <h1>Admin Login</h1>
+          {error && <p className="error-message">{error}</p>}
           <div className="form-group">
             <label>Username</label>
             <input
@@ -40,7 +45,11 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     );
   }
 
-  return <>{children}</>;
+  return (
+    <div className="admin-layout-container">
+      {children}
+    </div>
+  );
 };
 
 export default AdminLayout;

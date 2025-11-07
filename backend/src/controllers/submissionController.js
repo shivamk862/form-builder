@@ -52,7 +52,7 @@ exports.submitForm = async (req, res) => {
     }
 
     await submission.save();
-    res.status(201).json({ message: 'Form submitted successfully' });
+    res.status(201).json({ message: 'Form submitted successfully', submissionId: submission._id });
   } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
@@ -105,10 +105,8 @@ exports.exportSubmissions = async (req, res) => {
       const flatSubmission = {
         _id: submission._id,
         submittedAt: submission.submittedAt,
+        ...Object.fromEntries(submission.answers), // Convert Map to plain object
       };
-      for (const [key, value] of submission.answers) {
-        flatSubmission[key] = value;
-      }
       if (submission.file) {
         flatSubmission.file = submission.file.fileName;
       }

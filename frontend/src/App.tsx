@@ -7,27 +7,30 @@ import Submissions from './pages/Submissions';
 import UserForm from './pages/UserForm';
 import Navbar from './components/Navbar';
 import AdminLayout from './components/AdminLayout';
+import { AuthProvider } from './hooks/useAuth';
 
 const App: React.FC = () => {
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/forms/:id" element={<UserForm />} />
-        <Route
-          path="/admin"
-          element={<AdminLayout><AdminDashboard /></AdminLayout>}
-        />
-        <Route
-          path="/admin/forms/:id/builder"
-          element={<AdminLayout><FormBuilder /></AdminLayout>}
-        />
-        <Route
-          path="/admin/forms/:id/submissions"
-          element={<AdminLayout><Submissions /></AdminLayout>}
-        />
-      </Routes>
+      <AuthProvider>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/forms/:id" element={<UserForm />} />
+          <Route
+            path="/admin"
+            element={<AdminLayout><AdminDashboard /></AdminLayout>}
+          />
+          <Route
+            path="/admin/forms/:id/builder"
+            element={<AdminLayout><FormBuilder /></AdminLayout>}
+          />
+          <Route
+            path="/admin/forms/:id/submissions"
+            element={<AdminLayout><Submissions /></AdminLayout>}
+          />
+        </Routes>
+      </AuthProvider>
     </Router>
   );
 };

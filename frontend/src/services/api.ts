@@ -73,3 +73,8 @@ export const getSubmissionFile = async (submissionId: string) => {
   });
   return response.data;
 };
+
+export const adminLogin = async (username: string, password: string) => {
+  const response = await api.post('/admin/login', { username, password });
+  return response.data;
+};

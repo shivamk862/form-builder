@@ -47,3 +47,49 @@ thead th {
   border: 1px solid #ccc;
   border-radius: 3px;
 }
+
+.submission-preview-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.submission-preview-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.submission-preview-content h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.submission-preview-content p {
+  margin-bottom: 10px;
+}
+
+.submission-preview-content button {
+  margin-top: 20px;
+  background: #007bff;
+  color: #fff;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.submission-preview-content button:hover {
+  background: #0056b3;
+}

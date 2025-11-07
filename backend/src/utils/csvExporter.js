@@ -1,4 +1,4 @@
-const { Parser } = require('@json2csv/node');
+const { Parser } = require('@json2csv/plainjs');
 
 exports.exportToCsv = (data, fields) => {
   const opts = { fields };

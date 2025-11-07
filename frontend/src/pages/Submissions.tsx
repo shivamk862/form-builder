@@ -1,21 +1,30 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { getSubmissions, exportSubmissions, getSubmissionFile } from '../services/api';
+import { getSubmissions, exportSubmissions, getSubmissionFile, getFormById } from '../services/api';
 import './Submissions.css';
 
 const Submissions: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<{ [key: string]: string }>({});
+  const [showPreview, setShowPreview] = useState(false);
+  const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data: submissionsData, isLoading: isLoadingSubmissions, isError: isErrorSubmissions } = useQuery({
     queryKey: ['submissions', id, page, filters],
     queryFn: () => getSubmissions(id!, page, filters),
   });
 
-  const submissions = data?.submissions || [];
-  const totalPages = data?.totalPages || 1;
+  const { data: formData, isLoading: isLoadingForm, isError: isErrorForm } = useQuery({
+    queryKey: ['form', id],
+    queryFn: () => getFormById(id!),
+    enabled: !!id, // Only run this query if id is available
+  });
+
+  const submissions = submissionsData?.submissions || [];
+  const totalPages = submissionsData?.totalPages || 1;
+  const formFields = formData?.fields || [];
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters({ ...filters, [key]: value });
@@ -41,12 +50,22 @@ const Submissions: React.FC = () => {
     link.click();
   };
 
-  if (isLoading) {
+  const handlePreview = (submission: any) => {
+    setSelectedSubmission(submission);
+    setShowPreview(true);
+  };
+
+  const handleClosePreview = () => {
+    setSelectedSubmission(null);
+    setShowPreview(false);
+  };
+
+  if (isLoadingSubmissions || isLoadingForm) {
     return <div>Loading...</div>;
   }
 
-  if (isError) {
-    return <div>Error fetching submissions</div>;
+  if (isErrorSubmissions || isErrorForm) {
+    return <div>Error fetching data</div>;
   }
 
   return (
@@ -60,32 +79,24 @@ const Submissions: React.FC = () => {
           <table>
             <thead>
               <tr>
-                {Object.keys(submissions[0].answers).map((key) => (
-                  <th key={key}>
-                    {key}
-                    <input
-                      type="text"
-                      placeholder={`Filter by ${key}`}
-                      onChange={(e) => handleFilterChange(key, e.target.value)}
-                      className="filter-input"
-                    />
-                  </th>
-                ))}
                 <th>Submitted At</th>
+                <th>Email</th>
                 <th>File</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {submissions.map((submission: any) => (
                 <tr key={submission._id}>
-                  {Object.values(submission.answers).map((value: any, index) => (
-                    <td key={index}>{value}</td>
-                  ))}
                   <td>{new Date(submission.submittedAt).toLocaleString()}</td>
+                  <td>{submission.answers.email || '-'}</td>
                   <td>
                     {submission.file && (
                       <button onClick={() => handleDownload(submission._id, submission.file.fileName)} className="btn btn-secondary">{submission.file.fileName}</button>
                     )}
+                  </td>
+                  <td>
+                    <button onClick={() => handlePreview(submission)} className="btn btn-primary">Preview</button>
                   </td>
                 </tr>
               ))}
@@ -100,6 +111,30 @@ const Submissions: React.FC = () => {
         <span>Page {page} of {totalPages}</span>
         <button onClick={() => setPage(page + 1)} disabled={page === totalPages}>Next</button>
       </div>
+
+      {showPreview && selectedSubmission && (
+        <div className="submission-preview-overlay">
+          <div className="submission-preview-content">
+            <h2>Submission Details</h2>
+            <p><strong>Submitted At:</strong> {new Date(selectedSubmission.submittedAt).toLocaleString()}</p>
+            {formFields.map((field: any) => (
+              <p key={field.name}>
+                <strong>{field.label}:</strong> 
+                {(typeof selectedSubmission.answers[field.name] === 'object' && selectedSubmission.answers[field.name] !== null)
+                  ? JSON.stringify(selectedSubmission.answers[field.name])
+                  : selectedSubmission.answers[field.name] || '-'}
+              </p>
+            ))}
+            {selectedSubmission.file && (
+              <p>
+                <strong>File:</strong> 
+                <button onClick={() => handleDownload(selectedSubmission._id, selectedSubmission.file.fileName)} className="btn btn-secondary">{selectedSubmission.file.fileName}</button>
+              </p>
+            )}
+            <button onClick={handleClosePreview} className="btn btn-primary">Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

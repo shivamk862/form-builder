@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { getFormById, submitForm } from '../services/api';
@@ -10,7 +10,6 @@ const UserForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { register, handleSubmit } = useForm();
-
   const { data: form, isLoading, isError } = useQuery({
     queryKey: ['form', id],
     queryFn: () => getFormById(id!),
@@ -46,6 +45,8 @@ const UserForm: React.FC = () => {
   if (isError) {
     return <div>Error fetching form</div>;
   }
+
+  const hasFileField = form?.fields.some((field: any) => field.type === 'file');
 
   return (
     <div className="container">
