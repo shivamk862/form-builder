@@ -81,7 +81,6 @@ const Submissions: React.FC = () => {
               <tr>
                 <th>Submitted At</th>
                 <th>Email</th>
-                <th>File</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -90,11 +89,6 @@ const Submissions: React.FC = () => {
                 <tr key={submission._id}>
                   <td>{new Date(submission.submittedAt).toLocaleString()}</td>
                   <td>{submission.answers.email || '-'}</td>
-                  <td>
-                    {submission.file && (
-                      <button onClick={() => handleDownload(submission._id, submission.file.fileName)} className="btn btn-secondary">{submission.file.fileName}</button>
-                    )}
-                  </td>
                   <td>
                     <button onClick={() => handlePreview(submission)} className="btn btn-primary">Preview</button>
                   </td>
@@ -120,17 +114,15 @@ const Submissions: React.FC = () => {
             {formFields.map((field: any) => (
               <p key={field.name}>
                 <strong>{field.label}:</strong> 
-                {(typeof selectedSubmission.answers[field.name] === 'object' && selectedSubmission.answers[field.name] !== null)
-                  ? JSON.stringify(selectedSubmission.answers[field.name])
-                  : selectedSubmission.answers[field.name] || '-'}
+                {field.type === 'file' && selectedSubmission.file ? (
+                  <button onClick={() => handleDownload(selectedSubmission._id, selectedSubmission.file.fileName)} className="btn btn-secondary">{selectedSubmission.file.fileName}</button>
+                ) : (
+                  (typeof selectedSubmission.answers[field.name] === 'object' && selectedSubmission.answers[field.name] !== null)
+                    ? JSON.stringify(selectedSubmission.answers[field.name])
+                    : selectedSubmission.answers[field.name] || '-'
+                )}
               </p>
             ))}
-            {selectedSubmission.file && (
-              <p>
-                <strong>File:</strong> 
-                <button onClick={() => handleDownload(selectedSubmission._id, selectedSubmission.file.fileName)} className="btn btn-secondary">{selectedSubmission.file.fileName}</button>
-              </p>
-            )}
             <button onClick={handleClosePreview} className="btn btn-primary">Close</button>
           </div>
         </div>

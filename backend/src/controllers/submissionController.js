@@ -12,7 +12,31 @@ const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-exports.uploadFile = upload.single('file');
+exports.uploadFile = async (req, res, next) => {
+  const formId = req.params.id;
+  try {
+    const form = await Form.findById(formId);
+    if (!form) {
+      return res.status(404).json({ message: 'Form not found' });
+    }
+    const fileField = form.fields.find(field => field.type === 'file');
+    if (fileField) {
+      const upload = multer({ storage: storage }).single(fileField.name);
+      upload(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+          return res.status(500).json({ message: err.message });
+        } else if (err) {
+          return res.status(500).json({ message: 'Unknown error uploading file' });
+        }
+        next();
+      });
+    } else {
+      next(); // No file field, proceed without multer
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Server error during file upload setup' });
+  }
+};
 
 exports.submitForm = async (req, res) => {
   const errors = validationResult(req);
@@ -73,6 +97,7 @@ exports.getSubmissions = async (req, res) => {
     }
 
     const submissions = await Submission.find(query)
+      .select('_id submittedAt answers file.fileName file.contentType') // Explicitly select file metadata
       .limit(limit * 1)
       .skip((page - 1) * limit)
       .exec();

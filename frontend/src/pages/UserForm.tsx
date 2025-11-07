@@ -28,9 +28,14 @@ const UserForm: React.FC = () => {
 
   const onSubmit = (data: any) => {
     const formData = new FormData();
+    const fileField = form?.fields.find((field: any) => field.type === 'file');
+
     for (const key in data) {
-      if (key === 'file') {
-        formData.append('file', data[key][0]);
+      if (fileField && key === fileField.name) {
+        // Append the file using its actual field name
+        if (data[key] && data[key][0]) {
+          formData.append(fileField.name, data[key][0]);
+        }
       } else {
         formData.append(key, data[key]);
       }
